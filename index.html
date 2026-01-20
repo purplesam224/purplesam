@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>윤동주의 서울: 종점과 시점을 잇는 길</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #fdfbf7; /* Warm paper tone */
+            color: #2d3748;
+        }
+        
+        h1, h2, h3, .serif-font {
+            font-family: 'Noto Serif KR', serif;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%; 
+            height: 350px;
+            max-height: 400px;
+            margin: 0 auto;
+        }
+
+        .nav-point {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .nav-point:hover {
+            transform: scale(1.1);
+        }
+        .nav-point.active {
+            transform: scale(1.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom Scrollbar for activity cards */
+        .activity-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .activity-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .activity-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e0; 
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-stone-800 text-stone-100 py-8 px-4 shadow-md">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">윤동주의 서울: 종점과 시점을 잇는 길</h1>
+            <p class="text-stone-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                1941년, 식민지 지식인의 고뇌와 문학적 우정이 깃든 공간을 탐험합니다.<br>
+                누상동 하숙집에서 시작하여 효자동 전차 종점을 지나, 연희전문으로 향하는 그의 발자취를 따라가 보세요.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-6xl mx-auto w-full px-4 py-8">
+
+        <!-- Navigation: The Route -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
+                <!--  - Modified to show full image -->
+                <div class="mb-4 overflow-hidden rounded-lg shadow-inner border border-stone-100 max-w-4xl mx-auto bg-stone-50">
+                    <img src="https://postfiles.pstatic.net/MjAyNTA3MjNfMTg1/MDAxNzUzMjMwNDg5NTQ5.z1C1PXlAZQ94e2O5X8z-Du8Iu0wP_XuPE4D6SRKpXlsg.VCiA-zp81IP3n8hfgDKjRGcNn078gE6QPKcfxf_lWkYg.JPEG/%EC%9C%A4%EB%8F%99%EC%A3%BC%EB%AC%B8%ED%95%99%EA%B4%80_%EC%9D%B8%EC%99%95%EC%82%B0%EC%9E%90%EB%9D%BD%EA%B8%B8.jpg?type=w966" 
+                         alt="윤동주 문학관 인왕산 자락길" 
+                         class="w-full h-auto block"
+                         onerror="this.src='https://via.placeholder.com/1200x400?text=%EC%9D%B8%EC%99%95%EC%82%B0+%EC%9E%90%EB%9D%BD%EA%B8%B8+%EC%9D%B4%EB%AF%B8%EC%A7%80';">
+                </div>
+
+                <!--  - Modified to show full image -->
+                <div class="mb-6 overflow-hidden rounded-lg shadow-inner border border-stone-100 max-w-4xl mx-auto bg-stone-50">
+                    <img src="https://github.com/purplesam224/purplesam/blob/main/Gemini_Generated_Image_jmytmvjmytmvjmyt.png?raw=true" 
+                         alt="윤동주 시인 관련 생성 이미지" 
+                         class="w-full h-auto block"
+                         onerror="this.src='https://via.placeholder.com/1200x400?text=%EC%9C%A4%EB%8F%99%EC%A3%BC+%EA%B4%80%EB%A0%A8+%EC%9D%B4%EB%AF%B8%EC%A7%80';">
+                </div>
+
+                <h2 class="text-xl font-bold mb-8 text-center text-stone-600 serif-font">답사 코스 선택 (여정의 흐름)</h2>
+                
+                <div class="relative flex justify-between items-center max-w-3xl mx-auto px-4 md:px-12 py-4">
+                    <!-- Connecting Line -->
+                    <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-200 -z-0 transform -translate-y-1/2"></div>
+                    
+                    <!-- Point 1 -->
+                    <div onclick="updateView(0)" id="nav-0" class="nav-point relative z-10 flex flex-col items-center group">
+                        <div class="w-12 h-12 rounded-full bg-green-100 border-4 border-green-500 flex items-center justify-center text-green-700 transition-colors duration-300 group-hover:bg-green-200">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <span class="mt-2 text-sm font-bold text-gray-600 bg-white px-2 rounded">누상동 (하숙)</span>
+                    </div>
+
+                    <!-- Point 2 -->
+                    <div onclick="updateView(1)" id="nav-1" class="nav-point relative z-10 flex flex-col items-center group">
+                        <div class="w-12 h-12 rounded-full bg-yellow-100 border-4 border-yellow-500 flex items-center justify-center text-yellow-700 transition-colors duration-300 group-hover:bg-yellow-200">
+                            <i class="fas fa-train-tram"></i>
+                        </div>
+                        <span class="mt-2 text-sm font-bold text-gray-600 bg-white px-2 rounded">효자동~광화문 (등교)</span>
+                    </div>
+
+                    <!-- Point 3 -->
+                    <div onclick="updateView(2)" id="nav-2" class="nav-point relative z-10 flex flex-col items-center group">
+                        <div class="w-12 h-12 rounded-full bg-red-100 border-4 border-red-500 flex items-center justify-center text-red-700 transition-colors duration-300 group-hover:bg-red-200">
+                            <i class="fas fa-train"></i>
+                        </div>
+                        <span class="mt-2 text-sm font-bold text-gray-600 bg-white px-2 rounded">서울역~연희전 (현실)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Content Area -->
+        <div id="content-area" class="grid grid-cols-1 lg:grid-cols-12 gap-8 fade-in">
+            
+            <!-- Left Column: Context & History -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-sm border-l-4 border-stone-500" id="section-header-card">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="course-badge" class="px-2 py-1 text-xs font-bold rounded text-white bg-stone-500">COURSE 1</span>
+                        <span class="text-stone-400 text-sm"><i class="far fa-calendar-alt"></i> 1941년 5월 ~ 9월</span>
+                    </div>
+                    <h2 id="section-title" class="text-2xl font-bold text-stone-800 serif-font mb-2">제목</h2>
+                    <p id="section-subtitle" class="text-stone-600 italic">부제</p>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-stone-700 border-b pb-2">역사적 배경과 의미</h3>
+                    <div id="section-desc" class="text-stone-700 space-y-4 leading-relaxed text-justify"></div>
+                </div>
+
+                <div class="bg-stone-50 p-6 rounded-lg shadow-inner">
+                    <h3 class="font-bold text-stone-700 mb-3"><i class="fas fa-map-marker-alt mr-2"></i>주요 답사 거점</h3>
+                    <ul id="section-spots" class="space-y-2 text-stone-600"></ul>
+                </div>
+            </div>
+
+            <!-- Right Column: Visualization & Interaction -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-white p-6 rounded-lg shadow-md border border-stone-100">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="chart-title" class="font-bold text-lg text-stone-800">데이터 시각화</h3>
+                        <div class="text-xs text-stone-400">자료 출처: 답사 보고서 재구성</div>
+                    </div>
+                    <div id="chart-context-msg" class="mb-4 text-sm text-stone-600 bg-stone-50 p-3 rounded"></div>
+                    <div class="chart-container">
+                        <canvas id="mainChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-stone-50 to-white p-6 rounded-lg shadow-sm border border-stone-200">
+                    <h3 class="font-bold text-lg text-stone-800 mb-4 serif-font"><i class="fas fa-pen-nib mr-2"></i>체험 및 탐구 활동</h3>
+                    <div id="activity-content" class="space-y-4"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-stone-800 text-stone-400 py-6 mt-12 text-center text-sm">
+        <div class="max-w-6xl mx-auto px-4">
+            <p>&copy; 2024 윤동주 답사 프로젝트 아카이브. Based on the works of Kim Tae-bin.</p>
+        </div>
+    </footer>
+
+    <script>
+        const tourData = [
+            {
+                id: 0,
+                themeColor: 'green',
+                badgeText: '코스 1: 누상동',
+                title: '문학과 우정의 요람, 누상동',
+                subtitle: '마음을 주고받는 글벗과 함께한 가장 빛나던 시기',
+                description: `
+                    <p class="mb-2">1941년 5월부터 9월까지, 윤동주는 연희전문 친구 정병욱과 함께 인왕산 자락 누상동, 소설가 김송의 집에서 하숙생활을 했습니다.</p>
+                    <p class="mb-2">이 시기는 동주의 서울 생활 중 기록이 가장 많이 남아있는 때이자, <strong>&lt;자화상&gt;, &lt;또 다른 고향&gt; 등 대표작 9편</strong>이 탄생한 문학적 전성기였습니다.</p>
+                    <p>겸재 정선의 &lt;인왕제색도&gt; 배경이 되는 수성동 계곡을 매일 산책하며, 암울한 식민지 현실 속에서도 예술과 우정을 통해 위로받았던 공간입니다.</p>
+                `,
+                spots: ['윤동주 하숙집 터 (소설가 김송의 집)', '수성동 계곡 산책로', '인왕산 중턱'],
+                chartConfig: {
+                    type: 'bar',
+                    title: '1941년 누상동 시절의 문학적 성취',
+                    context: '이 시기 윤동주는 안정적인 하숙 생활과 벗과의 교류 속에서 폭발적인 창작 활동을 보였습니다. 9편의 대표작이 이때 쓰였습니다.',
+                    labels: ['봄 (5월)', '초여름 (6월)', '한여름 (7-8월)', '초가을 (9월)'],
+                    data: [2, 4, 1, 2],
+                    datasetLabel: '창작된 주요 시편 수 (추정)',
+                    yAxisLabel: '작품 수'
+                },
+                activity: {
+                    title: '시인의 산책길 따라가기',
+                    items: [
+                        { text: '정선이 그린 <수성동> 그림과 실제 계곡 비교해보기', icon: 'fas fa-image' },
+                        { text: '정병욱 선생의 회고록을 읽고, 국어책에 실린 시를 하숙집 터에서 낭송해보기', icon: 'fas fa-book-reader' },
+                        { text: '현재의 나에게 "가장 보람 있는 일"은 무엇인지 생각해보기', icon: 'fas fa-pen-fancy' }
+                    ]
+                }
+            },
+            {
+                id: 1,
+                themeColor: 'yellow',
+                badgeText: '코스 2: 등굣길',
+                title: '종점이 곧 시점이 되는 길',
+                subtitle: '철학적 단상이 깃든 일상의 등굣길',
+                description: `
+                    <p class="mb-2">수필 <strong>「종시(終始)」</strong>의 배경이 되는 코스입니다. 효자동 전차 종점은 학교로 향하는 출발점(시점)이기도 했습니다.</p>
+                    <p class="mb-2">전차는 경복궁 서쪽을 지나 광화문 앞으로 나아갑니다. 동주는 매일 아침 전차 안에서 동양 최대 석조건물이었던 <strong>조선총독부</strong>와 일제 식민 통치 기구들을 마주해야 했습니다.</p>
+                    <p>그의 등굣길은 단순한 이동이 아니라, 식민지 수도 경성의 화려함 뒤에 숨겨진 우울함을 목격하는 과정이었습니다.</p>
+                `,
+                spots: ['효자동 전차 종점 터', '경복궁 서쪽 담장 (통의동선)', '광화문 광장 (조선총독부 터)', '남대문 (전차 통과)'],
+                chartConfig: {
+                    type: 'line',
+                    title: '등굣길 심리적 긴장도 변화 (수필 기반 재구성)',
+                    context: '평화로운 인왕산 자락에서 출발해 식민 통치의 심장부인 광화문을 지날 때, 시인이 느꼈을 긴장감과 우울감의 고조를 시각화했습니다.',
+                    labels: ['누상동 하숙', '효자동 종점', '광화문 통과', '남대문', '서울역 도착'],
+                    data: [20, 30, 90, 70, 60],
+                    datasetLabel: '심리적 압박감/긴장도',
+                    yAxisLabel: '체감 지수 (0-100)'
+                },
+                activity: {
+                    title: '역사의 풍경 비교하기',
+                    items: [
+                        { text: '1941년 전차 노선도 위에 윤동주의 이동 경로 그려보기', icon: 'fas fa-map-marked-alt' },
+                        { text: '광화문 광장에서 옛 조선총독부 위치 확인하고 당시 시선 상상하기', icon: 'fas fa-eye' },
+                        { text: '수필 「종시」의 구절 "종점이 시점이 된다"의 의미 토론하기', icon: 'fas fa-comments' }
+                    ]
+                }
+            },
+            {
+                id: 2,
+                themeColor: 'red',
+                badgeText: '코스 3: 기차길',
+                title: '비극적 현실을 마주한 기차길',
+                subtitle: '상상으로 위무받는 참혹한 현실의 현장',
+                description: `
+                    <p class="mb-2">전차에서 내려 기차(용산선)로 갈아탄 동주는 신촌(연희전문)으로 향합니다. 이 구간에는 아현터널과 의영터널이 있었습니다.</p>
+                    <p class="mb-2">터널 공사장 트럭에 붙은 <strong>'신경행', '북경행'</strong> 팻말을 보며 일하는 조선인 노동자들의 비참한 현실을 목격합니다.</p>
+                    <p>시인은 이들의 고단한 현실을 자신의 처지와 동일시하며, 겉으로는 희극적 상상이지만 내밀하게는 비극 그 자체인 식민지 청년의 아픔을 기록했습니다.</p>
+                `,
+                spots: ['구 서울역 (경성역)', '아현터널 및 의영터널', '아현리역 터', '연희역 터 (연대 정문 인근)'],
+                chartConfig: {
+                    type: 'doughnut',
+                    title: '「종시」 속 현실 인식 구조',
+                    context: '동주는 터널 공사장 인부들의 "북경행" 농담을 보며 현실의 비참함(Reality)과 상상을 통한 위안(Fantasy) 사이의 괴리를 포착했습니다.',
+                    labels: ['비극적 현실 (노동, 식민지)', '희극적 상상 (북경행, 여행)'],
+                    data: [70, 30],
+                    datasetLabel: '텍스트 비중',
+                    yAxisLabel: ''
+                },
+                activity: {
+                    title: '사라진 흔적 찾기',
+                    items: [
+                        { text: '신촌로9길의 곡선 도로에서 옛 기차 철로의 흔적 찾아보기', icon: 'fas fa-road' },
+                        { text: '정병욱 선생이 되어 윤동주에게 보내는 답장 써보기', icon: 'fas fa-paper-plane' },
+                        { text: '내 삶에서 "터널"처럼 어둡지만 지나가야 할 구간은 어디인지 생각해보기', icon: 'fas fa-lightbulb' }
+                    ]
+                }
+            }
+        ];
+
+        let currentTab = 0;
+        let chartInstance = null;
+
+        const navPoints = document.querySelectorAll('.nav-point');
+        const courseBadge = document.getElementById('course-badge');
+        const sectionTitle = document.getElementById('section-title');
+        const sectionSubtitle = document.getElementById('section-subtitle');
+        const sectionDesc = document.getElementById('section-desc');
+        const sectionSpots = document.getElementById('section-spots');
+        const chartTitle = document.getElementById('chart-title');
+        const chartContextMsg = document.getElementById('chart-context-msg');
+        const activityContent = document.getElementById('activity-content');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateView(0);
+        });
+
+        function updateView(index) {
+            currentTab = index;
+            const data = tourData[index];
+
+            navPoints.forEach((point, idx) => {
+                const circle = point.querySelector('div');
+                const label = point.querySelector('span');
+                if (idx === index) {
+                    point.classList.add('active');
+                    circle.className = `w-12 h-12 rounded-full border-4 flex items-center justify-center transition-colors duration-300`;
+                    if(index === 0) circle.classList.add('bg-green-500', 'border-green-600', 'text-white');
+                    if(index === 1) circle.classList.add('bg-yellow-500', 'border-yellow-600', 'text-white');
+                    if(index === 2) circle.classList.add('bg-red-500', 'border-red-600', 'text-white');
+                    label.classList.add('text-stone-800');
+                } else {
+                    point.classList.remove('active');
+                    circle.className = `w-12 h-12 rounded-full border-4 flex items-center justify-center transition-colors duration-300 bg-white text-gray-400 border-gray-200 hover:border-gray-300`;
+                    label.classList.remove('text-stone-800');
+                }
+            });
+
+            courseBadge.className = `px-2 py-1 text-xs font-bold rounded text-white shadow-sm`;
+            if(index === 0) courseBadge.classList.add('bg-green-600');
+            if(index === 1) courseBadge.classList.add('bg-yellow-600');
+            if(index === 2) courseBadge.classList.add('bg-red-600');
+            
+            courseBadge.textContent = data.badgeText;
+            sectionTitle.textContent = data.title;
+            sectionSubtitle.textContent = data.subtitle;
+            sectionDesc.innerHTML = data.description;
+            sectionSpots.innerHTML = data.spots.map(spot => `<li class="flex items-start"><span class="mr-2 mt-1 text-stone-400 text-xs">●</span>${spot}</li>`).join('');
+
+            activityContent.innerHTML = `
+                <h4 class="font-bold text-sm text-stone-600 mb-2">${data.activity.title}</h4>
+                <ul class="space-y-3">
+                    ${data.activity.items.map(item => `
+                        <li class="flex items-center p-3 bg-white rounded border border-stone-100 hover:shadow-md transition-shadow cursor-pointer">
+                            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-500 mr-3 shrink-0"><i class="${item.icon}"></i></div>
+                            <span class="text-sm text-stone-700">${item.text}</span>
+                        </li>
+                    `).join('')}
+                </ul>
+            `;
+
+            updateChart(data.chartConfig, data.themeColor);
+            const contentArea = document.getElementById('content-area');
+            contentArea.classList.remove('fade-in');
+            void contentArea.offsetWidth;
+            contentArea.classList.add('fade-in');
+        }
+
+        function updateChart(config, theme) {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            chartTitle.textContent = config.title;
+            chartContextMsg.textContent = config.context;
+            if (chartInstance) chartInstance.destroy();
+
+            let mainColor = theme === 'green' ? '#48bb78' : theme === 'yellow' ? '#ecc94b' : '#f56565';
+
+            chartInstance = new Chart(ctx, {
+                type: config.type,
+                data: {
+                    labels: config.labels,
+                    datasets: [{
+                        label: config.datasetLabel,
+                        data: config.data,
+                        backgroundColor: config.type === 'line' ? 'transparent' : config.type === 'doughnut' ? [mainColor, '#cbd5e0'] : mainColor,
+                        borderColor: mainColor,
+                        borderWidth: 2,
+                        tension: 0.3,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: config.type === 'doughnut', position: 'bottom' }
+                    },
+                    scales: config.type === 'doughnut' ? {} : {
+                        y: { beginAtZero: true, title: { display: !!config.yAxisLabel, text: config.yAxisLabel } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
